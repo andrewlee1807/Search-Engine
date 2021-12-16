@@ -48,11 +48,12 @@ def encoding(list_of_tokens):
                     "camera": [0, 0, 0],
                     "price": [0, 0, 0],
                     "battery": [0, 0, 0],
-                    "popularity": [10000, 0, 0.05]}
+                    "popularity": [10000, 0, 0.01]}
                     # "memory": [0, 0, 0],}
     list_of_tokens.append(("", "END"))
     temp_queue = []
     for token in list_of_tokens:
+        print(temp_queue)
         if(len(temp_queue) == 0 or 
                 (priority[temp_queue[-1][1]] >= priority[token[1]])):
             temp_queue.append(token)
@@ -62,7 +63,7 @@ def encoding(list_of_tokens):
             sign = 0
             key = ""
             for sub_token in temp_queue:
-                if(sub_token[1] == "NN"): 
+                if(sub_token[1] == "NN"):
                     if(sub_token[0].lower() in Pronoun_BOW):
                         sub_token[1] = "NNP"
                     else:

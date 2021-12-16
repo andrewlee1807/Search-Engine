@@ -10,7 +10,6 @@ with open(r"phone.json", encoding='utf-8') as json_file:
     data = json.load(json_file)
 
     # Print the type of data variable
-    print("Type:", type(data))
     list_device = product_from_dict(data)
     database = {}
     for i in range(0, len(list_device), 2): #I dont know why overlap data
@@ -59,7 +58,9 @@ def query(request, database):
         
         if(np.any((cons * (x - y)) < 0)):
             continue
-        BLEU = sentence_bleu([device[0].split(" ")], Features[0].split(" "), weights=(1, 0, 0, 0))
+        BLEU = 0
+        if(Features[0] != 0):
+            BLEU = sentence_bleu([device[0].split(" ")], Features[0].split(" "), weights=(1, 0, 0, 0))
         scores = (x - y) * (x - y)
         scores = np.append(1 - BLEU, scores)
         w = np.array(Weights)
@@ -73,8 +74,9 @@ def query(request, database):
 
 if __name__ == "__main__":
    
-    sample = "Samsung S21 phone with \xe5 display more than 5.0 inches,   good cameras,  and price less than 500USD, and battery around 4000mah   "
+    sample = "Iphone"
     request = sentence_encoding(sample)
+    print(request)
     ranking = query(request, database=database)
     top_k_result = 10
     count = 0
