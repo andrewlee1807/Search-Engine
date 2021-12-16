@@ -4,35 +4,52 @@ import re
 from nltk import featstruct
 from nltk.corpus import wordnet
 from nltk.stem import WordNetLemmatizer
-# from nltk import ngrams
+from nltk import ngrams
 import re
+import pickle
 lemmatizer = WordNetLemmatizer()
 
 
-synonyms = {"device": [], "display": [], "camera": [], "popularity": [], "price": [], "memory": [], "battery": [],
-             "less": [], "more": [], "around": []}
-for key in synonyms:
-    for syn in wordnet.synsets(key):
-        for lm in syn.lemmas():
-                synonyms[key].append(lm.name())#adding into synonyms
 
-def check_synonym(word):
-    for key in synonyms:
-        if(word in synonyms[key]):
+with open('bag_word.txt','rb') as f:
+    Pronoun_BOW = pickle.load(f)
+
+Noun_BOW = {"device": ["device"],
+            "display": ["display", "screen", "resolution", "size", "height", "width", "length", "diameter", "dimension"], 
+            "camera": ["camera"], 
+            "price": ["price", "fee", "worth", "value", "cost"], 
+            # "memory": ["memory", "ram", ""], 
+            "battery": ["battery", "life", "working"]}
+ADJ_BOW = {"more": ["more", "big", "high", "great", "good", "large", "long", "above"], 
+            "less": ["small", "less", "short", "few", "low", "under", "below"]}
+
+Unit_BOW = {
+        "display": ["inch", "cm", "mm", "hz"], 
+        "camera": ["mp"], 
+        "price": ["usd"], 
+        # "memory": ["gb", "g"], 
+        "battery": ["mah"]}
+
+# for key in Noun_BOW:
+#     for syn in wordnet.synsets(key):
+#         for lm in syn.lemmas():
+#                 Noun_BOW[key].append(lm.name())#adding into synonyms
+
+def get_syn(word, BOW):
+    for key in BOW:
+        if(word in BOW[key]):
             return key
-    return ""
-
-print(check_synonym("monitor"))
+    return None
 
 def encoding(list_of_tokens):
     priority = {"END": 100, "NNP": 0, "NN": 3, "JJ": 2, "RB": 2, "CD": 1}
     encode_dict = {"device": [0, 0, 0],
                     "display": [0, 0, 0],
                     "camera": [0, 0, 0],
-                    "popularity": [0, 0, 0],
                     "price": [0, 0, 0],
-                    "memory": [0, 0, 0],
-                    "battery": [0, 0, 0]}
+                    "battery": [0, 0, 0],
+                    "popularity": [10000, 0, 0.05]}
+                    # "memory": [0, 0, 0],}
     list_of_tokens.append(("", "END"))
     temp_queue = []
     for token in list_of_tokens:
@@ -45,29 +62,38 @@ def encoding(list_of_tokens):
             sign = 0
             key = ""
             for sub_token in temp_queue:
-                if(sub_token[1] == "NN"): #prior = 1
-                    syn = check_synonym(sub_token[0])
-                    if(syn != ""):
-                        key = syn
-                        weight += 1
-                        encode_dict[key][-1] = weight
+                if(sub_token[1] == "NN"): 
+                    if(sub_token[0].lower() in Pronoun_BOW):
+                        sub_token[1] = "NNP"
+                    else:
+                        syn = get_syn(sub_token[0], BOW=Noun_BOW)
+                        if(syn != None):
+                            key = syn
+                            weight += 1
+                            encode_dict[key][-1] = weight
 
-                elif(sub_token[1] == "NNP"): #prior = 0
-                    value += (" " + sub_token[0])
-                    value = value.strip().lower()
-                    key = "device"
-                    weight += 1
-                elif(sub_token[1] == "JJ" or sub_token[1] == "RB"): #prior = 2
-                    contraints = check_synonym(sub_token[0])
+                if(sub_token[1] == "NNP"): 
+                    t = sub_token[0].lower()
+                    if(t in Pronoun_BOW):
+                        value += (" " + t)
+                        value = value.strip()
+                        key = "device"
+                        weight += 1
+
+                elif(sub_token[1] == "JJ" or sub_token[1] == "RB"):
+                    contraints = get_syn(sub_token[0], BOW=ADJ_BOW)
                     if(contraints == "less"): sign = -1
                     elif(contraints == "more"): sign = 1
 
                 elif(sub_token[1] == "CD"): #prior = 3
                     num = re.findall(r"[-+]?\d*\.\d+|\d+", sub_token[0])[0]
-                    # unit = sub_token[0].split(num)[-1]
+                    unit = sub_token[0].split(num)[-1]
                     value = float(num)
                     weight += 1
-                    # if(unit != num): #contain unit
+                    if(unit != num): #contain unit
+                        get_key = get_syn(unit, BOW=Unit_BOW) 
+                        if(get_key != None):
+                            key = get_key
         
             if(key != ""):
                 encode_dict[key] = [value, sign, weight]
@@ -101,11 +127,11 @@ def sentence_encoding(sentence):
     lemmatized_pos = []
     for p in pos:
         if(p[1] in ["JJ", "JJR", "JJS"]):
-            lemmatized_pos.append((lemmatizer.lemmatize(p[0], pos="a"), "JJ"))
+            lemmatized_pos.append([lemmatizer.lemmatize(p[0], pos="a"), "JJ"])
         elif(p[1] in ['NN', 'NNS']):
-            lemmatized_pos.append((lemmatizer.lemmatize(p[0], pos="n"), "NN"))
+            lemmatized_pos.append([lemmatizer.lemmatize(p[0], pos="n"), "NN"])
         elif(p[1] in ['RB', 'RBR', 'RBS']):
-            lemmatized_pos.append((lemmatizer.lemmatize(p[0], pos="r"), "RB"))
+            lemmatized_pos.append([lemmatizer.lemmatize(p[0], pos="r"), "RB"])
         # elif(p[1] in ['VB', 'VBD', 'VBN', 'VBP', 'VBG', 'VBPZ']):
         #     lemmatized_pos.append((lemmatizer.lemmatize(p[0], pos="v"), "VB"))
         else:
@@ -122,6 +148,6 @@ def sentence_encoding(sentence):
 
 if __name__ == "__main__":
 
-    sample = "  What Samsung S21 phone with \xe5 display more than 5.0 inches,   good cameras,  and price less than 500USD, and battery around 4000mah   "
+    sample = "Samsung S21 phone larger than 5.0inch,   good cameras,  and cost less than 500USD, and battery around 4000mah   "
     code = sentence_encoding(sample)
     print(code)
