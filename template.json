@@ -1,0 +1,101 @@
+{
+        "DEVICE": "",
+        "POPULARITY":
+        {
+            "Love": "",
+            "Click": ""
+        },
+        "NETWORK": 
+        {
+            "Technology": "",
+            "2G bands": "",
+            "3G bands": "",
+            "4G bands": "",
+            "5G bands": "",
+            "Speed": ""
+        },
+        "LAUNCH":
+        {
+            "Announced": "",
+            "Status": ""
+        },
+        "BODY":
+        {
+            "Dimensions": "",
+            "Weight": "",
+            "Build": "",
+            "SIM": ""
+        },
+        "DISPLAY":
+        {
+            "Type": "",
+            "Size": "",
+            "Resolution": "",
+            "Protection": ""
+        },
+        "PLATFORM":
+        {
+            "OS": "",
+            "Chipset": "",
+            "CPU": "",
+            "GPU": ""
+        },
+        "MEMORY":
+        {
+            "Card slot": "",
+            "Internal": ""
+
+        },
+        "MAIN CAMERA":
+        {
+            "Quad": "",
+            "Features": "",
+            "Video": ""
+        },
+        "SELFIE CAMERA":
+        {
+            "Single": "",
+            "Features": "",
+            "Video": ""
+        },
+        "SOUND":
+        {
+            "Loudspeaker": "",
+            "3.5mm jack": ""
+        },
+        "COMMS":
+        {
+            "WLAN": "",
+            "Bluetooth": "",
+            "GPS": "",
+            "NFC": "",
+            "Radio": "",
+            "USB": ""
+        },
+        "FEATURES":
+        {
+            "Sensors": ""
+        },
+        "BATTERY":
+        {
+            "Colors": "",
+            "Models": "",
+            "SAR": "",
+            "SAR EU": "",
+            "Price": ""
+        },
+        "TESTS":
+        {
+            "Performance": "",
+            "Display": "",
+            "Camera": "",
+            "Loudspeaker": "",
+            "Battery life": ""
+        },
+        "OPINIONS": [
+
+        ],
+        "NUMFEATURES": [
+
+        ]
+}

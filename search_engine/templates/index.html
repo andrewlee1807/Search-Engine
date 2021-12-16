@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html>
+<head lang="ja">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="http://maxcdn.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet">
+    <title>Search engine</title>
+    <style>
+        table, th, td {
+           border:1px solid black;
+        }
+        table {
+            width: 100%;
+            border: 1px solid #000;
+            }
+            th {
+                text-align: center;
+            }
+            th.title, th.info {
+            width: 15%
+            }
+            th.detail {
+            width: 70%; /* Not necessary, since only 70% width remains */
+            }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Phone Finder - is all you need</h1>
+
+        <form method="post" action="{{url_for('index')}}">
+            <div class="row">
+                <div class="col-xs-10">
+                    <input type="text" class="form-control" name="keyword" placeholder="Please enter a keyword.">
+                </div>
+                <div class="col-xs-2">
+                    <input type="submit" class="btn btn-md btn-block btn-primary" value="Search">
+                </div>
+            </div>
+        </form>
+
+        <br>
+
+        {% if products %}
+        <h3 style="font-size: 15px">「{{keyword}}」</h3>
+        <h3>Search results ...</h3>
+        <ul>
+            {% for product in products %}
+            <li><a href="{{url}}">{{product.device.full_name}}</a>
+                <p style="color: red; font-weight: 900;"> Price: {{product.battery.price}} USD</p>
+                <div>
+                    <table>
+                        <thead>
+                            <tr>
+                            <th class="title"></th>
+                            <th class="info"></th>
+                            <th class="detail"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+   
+                            <!-- Launch -->
+                            <tr>
+                                <th rowspan="2" scope="row">Launch</th>
+                                <td class="ttl"><a href="glossary.php3?term=phone-life-cycle">Announced</a></td>
+                                <td class="nfo" data-spec="year">{{product.launch.announced_str}}</td>
+                            </tr>	
+                            <tr>
+                                <td class="ttl"><a href="glossary.php3?term=phone-life-cycle">Status</a></td>
+                                <td class="nfo" data-spec="status">{{product.launch.status}}</td>
+                            </tr>
+    
+                            <!-- Platform -->
+                            <tr>
+                                <th rowspan="4" scope="row">Platform</th>
+                                <td class="ttl"><a href="glossary.php3?term=os">OS</a></td>
+                                <td class="nfo" data-spec="os">{{product.platform.os}}</td>
+                                </tr>
+            
+                                <tr><td class="ttl"><a href="glossary.php3?term=chipset">Chipset</a></td>
+                                <td class="nfo" data-spec="chipset">{{product.platform.chipset}}</td>
+                                </tr>
+            
+                                <tr><td class="ttl"><a href="glossary.php3?term=cpu">CPU</a></td>
+                                <td class="nfo" data-spec="cpu">{{product.platform.cpu}}</td>
+                                </tr>
+            
+                                <tr><td class="ttl"><a href="glossary.php3?term=gpu">GPU</a></td>
+                                <td class="nfo" data-spec="gpu">{{product.platform.gpu}}</td>
+                            </tr>
+    
+                            <!-- Display -->
+                            <tr>
+                                <th rowspan="4" scope="row">Display</th>
+                                <td class="ttl"><a href="glossary.php3?term=display-type">Type</a></td>
+                                <td class="nfo" data-spec="displaytype">{{product.display.type}}</td>
+                                </tr>
+                                <tr>
+                                <td class="ttl"><a href="#" onclick="helpW('h_dsize.htm');">Size</a></td>
+                                <td class="nfo" data-spec="displaysize">{{product.display.size}}</td>
+                                </tr>
+                                <tr>
+                                <td class="ttl"><a href="glossary.php3?term=resolution">Resolution</a></td>
+                                <td class="nfo" data-spec="displayresolution">{{product.display.resolution_str}}</td>
+                                </tr>
+                                <tr>
+                                <td class="ttl"><a href="glossary.php3?term=screen-protection">Protection</a></td>
+                                <td class="nfo" data-spec="displayprotection">{{product.display.protection_str}}</td>
+                            </tr>
+    
+                            <!--Battery  -->
+                            <tr>
+                                <th rowspan="1" scope="row">Battery</th>
+                                <td class="ttl"><a href="glossary.php3?term=rechargeable-battery-types">Type</a></td>
+                                <td class="nfo" data-spec="batdescription1">{{product.battery.type}}</td>
+                            </tr>
+    
+                            <!--Main Camera  -->
+                            <tr>
+                                <th rowspan="3" scope="row" class="small-line-height">Main Camera</th>
+                                    <td class="ttl"><a href="glossary.php3?term=camera">Spec</a></td>
+                                <td class="nfo" data-spec="cam1modules">{{product.main_camera.single_str}}</td>
+                                </tr>
+                                <tr>
+                                <td class="ttl"><a href="glossary.php3?term=camera">Features</a></td>
+                                <td class="nfo" data-spec="cam1features">{{product.main_camera.features}}</td>
+                                </tr>
+                                <tr>
+                                <td class="ttl"><a href="glossary.php3?term=camera">Video</a></td>
+                                <td class="nfo" data-spec="cam1video">{{product.main_camera.video}}</td>
+                            </tr>
+    
+                            <!-- Selfie camera  -->
+                            <tr>
+                                <th rowspan="3" scope="row" class="small-line-height">Selfie camera</th>
+                                    <td class="ttl"><a href="glossary.php3?term=secondary-camera">Spec</a></td>
+                                <td class="nfo" data-spec="cam2modules">{{product.selfie_camera.single_str}}"<br>
+                            SL 3D, (depth/biometrics sensor)</td>
+                                </tr>
+                                <tr>
+                                <td class="ttl"><a href="glossary.php3?term=secondary-camera">Features</a></td>
+                                <td class="nfo" data-spec="cam2features">{{product.selfie_camera.single}}</td>
+                                </tr>
+                                <tr>
+                                <td class="ttl"><a href="glossary.php3?term=secondary-camera">Video</a></td>
+                                <td class="nfo" data-spec="cam2video">{{product.selfie_camera.single}}</td>
+                            </tr>                           
+    
+                                        
+                        </tbody>
+                    </table>
+                    <br>
+                   <span style="white-space: pre-line"></span>
+
+                </div>
+            </li>
+            {% else %}
+            <p>There was no page with that keyword.</p>
+            {% endfor %}
+
+
+        </ul>
+        {% else %}
+        <p>Enter a keyword and press the search button.</p>
+        {% endif %}
+
+        <!-- {% if keyword %}
+        <h3>「{{keyword}}」Search results ...</h3>
+        <ul>
+            {% for url in products['url'] %}
+            <li><a href="{{url}}">{{url}}</a></li>
+            {% else %}
+            <p>There was no page with that keyword.</p>
+            {% endfor %}
+        </ul>
+        {% else %}
+        <p>Enter a keyword and press the search button.</p>
+        {% endif %} -->
+    </div><!-- container -->
+    <script src="//code.jquery.com/jquery.js"></script>
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+</body>
+</html>
