@@ -46,7 +46,8 @@ class Battery:
     sar: str
     sar_eu: str
     price: float
-    type: str
+    type: int
+    type_str: str
 
     @staticmethod
     def from_dict(obj: Any) -> 'Battery':
@@ -62,8 +63,13 @@ class Battery:
                 price = float(t.split("/")[0].replace(',', '').replace("$", '').replace("€", '').replace("£", ''))
             elif "About" in t:
                 price = float(re.findall(r'\d+', t)[0])
-        type = from_str(obj.get("Type"))
-        return Battery(colors, models, sar, sar_eu, price, type)
+        type_str = from_str(obj.get("Type"))
+        type = -1
+        temp1 = re.findall(r'\d+', from_str(obj.get("Type")))  # find number of digits through regular expression
+        res2 = list(map(int, temp1))
+        if len(res2) >= 1:
+            type = res2[0]
+        return Battery(colors, models, sar, sar_eu, price, type, type_str)
 
     def to_dict(self) -> dict:
         result: dict = {}
