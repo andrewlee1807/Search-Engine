@@ -43,7 +43,7 @@ with open(r"phone.json", encoding='utf-8') as json_file:
     max_popular = max([database[k][5] for k in database ])
 
 
-def query(request, database):
+def query(request):
 
     Features, Weights, Contraints = request
     similarity = {}
@@ -60,7 +60,9 @@ def query(request, database):
         
         if(np.any((cons * (x - y)) < 0)):
             continue
-        BLEU = sentence_bleu([device[0].split(" ")], Features[0].split(" "), weights=(1, 0, 0, 0))
+        BLEU = 0
+        if (Features[0] != 0):
+            BLEU = sentence_bleu([device[0].split(" ")], Features[0].split(" "), weights=(1, 0, 0, 0))
         scores = (x - y) * (x - y)
         scores = np.append(1 - BLEU, scores)
         w = np.array(Weights)
